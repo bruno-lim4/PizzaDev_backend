@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
 // mysqli_set_charset($conn, 'utf-8');
 if (mysqli_connect_errno()) {
@@ -7,8 +8,16 @@ if (mysqli_connect_errno()) {
 
 $msg = array();
 
-try {
-    if ($_POST) {
+try 
+{
+    if ($_POST)
+    {
+        $id = filter_var($_POST['id'], FILTER_VALIDATE_INT, [
+            'options' => array(
+                'min_range' => 1
+            )
+        ]) ?: throw new Exception('ID informado é inválido!');
+
         $nome = filter_var($_POST['nomePizza'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome da Pizza!');
         $des = filter_var($_POST['descricao'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Descrição dos ingredientes!');
         $foto = filter_var($_POST['foto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Foto!');
@@ -20,8 +29,7 @@ try {
         $des = mysqli_real_escape_string($conn, $des);
         $foto = mysqli_real_escape_string($conn, $foto);
 
-        $sql = "INSERT INTO pizzas (nome, ingredientes, img, brotinho, media, grande) VALUES('$nome', '$des', '$foto', $brotinho, $media, $grande)";
-
+        $sql = "UPDATE pizzas SET nome = '$nome', ingredientes = '$des', img = '$foto', brotinho = $brotinho, media = $media, grande = $grande WHERE pizza_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
         if ($resultado === false || mysqli_errno($conn)) {
@@ -30,8 +38,38 @@ try {
 
         $msg = array(
             'classe' => 'msg-sucesso',
-            'mensagem' => 'Pizza cadastrada com sucesso!'
+            'mensagem' => 'Pizza atualizada com sucesso!'
         );
+    }
+
+    if (isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']))
+    {
+        $id = filter_var($_GET['id'], FILTER_VALIDATE_INT, [
+            'options' => array(
+                'min_range' => 1
+            )
+        ]);
+
+        if ($id === false) {
+            throw new Exception('ID fornecido é inválido!');
+        }
+
+        $sql = "SELECT * FROM pizzas WHERE pizza_id = $id";
+        $resultado = mysqli_query($conn, $sql);
+
+        if (!$resultado || mysqli_errno($conn)) {
+            throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
+        }
+
+        $pizza = mysqli_fetch_assoc($resultado);
+        if (!$pizza) {
+            throw new Exception('Dados da pizza não foram encontrados!');
+        }
+    }
+    else 
+    {
+        header('Location: index.php');
+        exit;
     }
 }
 catch(Exception $ex)
@@ -50,7 +88,7 @@ catch(Exception $ex)
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Pizza | Administração | Pizza DEV</title>
+    <title>Editar Pizza | Administração | Pizza DEV</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -70,7 +108,7 @@ catch(Exception $ex)
     </header>
     <div class="pagina container">
         <div class="cabecalho flex bordered">
-            <h1>Cadastrar Pizza</h1>
+            <h1>Editar Pizza</h1>
             <a href="index.php" class="botao">
                 Voltar
             </a>
@@ -83,16 +121,20 @@ catch(Exception $ex)
         <?php endif; ?>
 
         <form action="" method="post">
-            <input type="text" name="nomePizza" id="nomePizza" class="input-field" placeholder="* Nome da Pizza" />
-            <textarea name="descricao" id="descricao" cols="1" rows="6" class="input-field" placeholder="* Descrição dos Ingredientes"></textarea>
-            <div class="group-field flex">
-                <input type="number" name="precoBrotinho" id="precoBrotinho" class="input-field" step=".01" placeholder="* Preço Brotinho" />
-                <input type="number" name="precoMedia" id="precoMedia" class="input-field" step=".01" placeholder="* Preço Média" />
-                <input type="number" name="precoGrande" id="precoGrande" class="input-field" step=".01" placeholder="* Preço Grande" />
+            <div class="form-group">
+                <label for="">ID:</label>
+                <input type="text" name="id" class="input-field" readonly value="<?= $pizza['pizza_id'] ?? '' ?>">
             </div>
-            <input type="text" name="foto" id="foto" class="input-field" placeholder="Foto (ex: pizza-calabresa.jpg)" />
+            <input type="text" name="nomePizza" id="nomePizza" value="<?= $pizza['nome'] ?>" class="input-field" placeholder="* Nome da Pizza" />
+            <textarea name="descricao" id="descricao" cols="1" rows="6" class="input-field" placeholder="* Descrição dos Ingredientes"><?= $pizza['ingredientes'] ?></textarea>
+            <div class="group-field flex">
+                <input type="number" name="precoBrotinho" id="precoBrotinho" value="<?= $pizza['brotinho'] ?>" class="input-field" step=".01" placeholder="* Preço Brotinho" />
+                <input type="number" name="precoMedia" id="precoMedia" value="<?= $pizza['media'] ?>" class="input-field" step=".01" placeholder="* Preço Média" />
+                <input type="number" name="precoGrande" id="precoGrande" value="<?= $pizza['grande'] ?>" class="input-field" step=".01" placeholder="* Preço Grande" />
+            </div>
+            <input type="text" name="foto" id="foto" value="<?= $pizza['img'] ?>" class="input-field" placeholder="Foto (ex: pizza-calabresa.jpg)" />
             <button type="submit" class="botao">
-                Cadastrar
+                Salvar
             </button>
         </form>
     </div>

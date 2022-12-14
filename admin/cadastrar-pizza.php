@@ -1,3 +1,49 @@
+<?php 
+$conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
+mysqli_set_charset($conn, 'utf-8');
+if (mysqli_connect_errno()) {
+    die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
+}
+
+$msg = array();
+
+try {
+    if ($_POST) {
+        // $nome = filter_var($_POST['nomePizza'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome da Pizza!');
+        // $des = filter_var($_POST['descricao'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Descrição dos ingredientes!');
+        // $foto = filter_var($_POST['foto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Foto!');
+        $brotinho = filter_var($_POST['precoBrotinho'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Brotinho!');
+        $media = filter_var($_POST['precoMedia'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Média!');
+        $grande = filter_var($_POST['precoGrande'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Grande!');
+        
+        $nome = mysqli_real_escape_string($conn, $nome);
+        $des = mysqli_real_escape_string($conn, $des);
+        $foto = mysqli_real_escape_string($conn, $foto);
+
+        $sql = "INSERT INTO pizzas (nome, ingredientes, img, brotinho, media, grande) VALUES('$nome', '$des', '$foto', $brotinho, $media, $grande)";
+
+        $resultado = mysqli_query($conn, $sql);
+
+        if ($resultado === false || mysqli_errno($conn)) {
+            throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
+        }
+
+        $msg = array(
+            'classe' => 'alert-success',
+            'mensagem' => 'Pizza cadastrada com sucesso!'
+        );
+    }
+}
+catch(Exception $ex)
+{
+    $msg = array(
+        'classe' => 'alert-danger',
+        'mensagem' => $ex->getMessage()
+    );
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>

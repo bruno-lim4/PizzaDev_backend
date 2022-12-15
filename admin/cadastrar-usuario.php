@@ -1,3 +1,52 @@
+<?php 
+$conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
+// mysqli_set_charset($conn, 'utf-8');
+if (mysqli_connect_errno()) {
+    die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
+}
+
+$msg = array();
+
+try {
+    if ($_POST) {
+        $nomeCompleto = filter_var($_POST['nomeCompleto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome Completo!');
+        $usuario = filter_var($_POST['usuario'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Usuário!');
+        $senha = filter_var($_POST['senha'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Senha!');
+        $confirmacaoSenha= filter_var($_POST['confirmacaoSenha'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Confirmar Senha!');
+        
+        $nomeCompleto = mysqli_real_escape_string($conn, $nomeCompleto);
+        $usuario = mysqli_real_escape_string($conn, $usuario);
+        $senha = mysqli_real_escape_string($conn, $senha);
+        $confirmacaoSenha = mysqli_real_escape_string($conn, $confirmacaoSenha);
+
+        $sql = "INSERT INTO usuarios (nome_completo, username, senha) VALUES('$nomeCompleto', '$usuario', '$senha')";
+
+        $resultado = mysqli_query($conn, $sql);
+
+        if ($senha != $confirmacaoSenha) {
+            throw new Exception('As senhas não coincidem');
+        }
+
+        if ($resultado === false || mysqli_errno($conn)) {
+            throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
+        }
+
+        $msg = array(
+            'classe' => 'msg-sucesso',
+            'mensagem' => 'Usuário cadastrado com sucesso!'
+        );
+    }
+}
+catch(Exception $ex)
+{
+    $msg = array(
+        'classe' => 'msg-erro',
+        'mensagem' => $ex->getMessage()
+    );
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -16,7 +65,7 @@
     <header class="topo flex container-padding">
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
-            <a href="index.html">Pizzas</a>
+            <a href="index.php">Pizzas</a>
             <a href="mensagens.html">Mensagens</a>
             <a href="usuarios.html" class="active">Usuários</a>
             <a href="login.html">Sair</a>
@@ -30,12 +79,11 @@
             </a>
         </div>
 
-        <div class="msg-sucesso">
-            Exemplo de mensagem de sucesso!
-        </div>
-        <div class="msg-erro">
-            Exemplo de mensagem de erro!
-        </div>
+        <?php if ($msg) : ?>
+            <div class="<?= $msg['classe'] ?>">
+                <?= $msg['mensagem']; ?>
+            </div>
+        <?php endif; ?>
 
         <form action="" method="post">
             <input type="text" name="nomeCompleto" id="nomeCompleto" class="input-field" placeholder="* Nome completo" />

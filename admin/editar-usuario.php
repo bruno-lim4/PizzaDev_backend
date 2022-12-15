@@ -18,19 +18,22 @@ try
             )
         ]) ?: throw new Exception('ID informado é inválido!');
 
-        $nome = filter_var($_POST['nomePizza'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome da Pizza!');
-        $des = filter_var($_POST['descricao'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Descrição dos ingredientes!');
-        $foto = filter_var($_POST['foto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Foto!');
-        $brotinho = filter_var($_POST['precoBrotinho'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Brotinho!');
-        $media = filter_var($_POST['precoMedia'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Média!');
-        $grande = filter_var($_POST['precoGrande'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Preço Grande!');
+        $nomeCompleto = filter_var($_POST['nomeCompleto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome Completo!');
+        $usuario = filter_var($_POST['usuario'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Usuário!');
+        $senha = filter_var($_POST['senha'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Senha!');
+        $confirmacaoSenha= filter_var($_POST['confirmacaoSenha'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Confirmar Senha!');
         
-        $nome = mysqli_real_escape_string($conn, $nome);
-        $des = mysqli_real_escape_string($conn, $des);
-        $foto = mysqli_real_escape_string($conn, $foto);
+        $nomeCompleto = mysqli_real_escape_string($conn, $nomeCompleto);
+        $usuario = mysqli_real_escape_string($conn, $usuario);
+        $senha = mysqli_real_escape_string($conn, $senha);
+        $confirmacaoSenha = mysqli_real_escape_string($conn, $confirmacaoSenha);
 
-        $sql = "UPDATE pizzas SET nome = '$nome', ingredientes = '$des', img = '$foto', brotinho = $brotinho, media = $media, grande = $grande WHERE pizza_id = $id";
+        $sql = "UPDATE usuarios SET nome_completo = '$nomeCompleto', username = '$usuario', senha = '$senha' WHERE usuario_id = $id";
         $resultado = mysqli_query($conn, $sql);
+
+        if ($senha != $confirmacaoSenha) {
+            throw new Exception('As senhas não coincidem');
+        }
 
         if ($resultado === false || mysqli_errno($conn)) {
             throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
@@ -54,7 +57,7 @@ try
             throw new Exception('ID fornecido é inválido!');
         }
 
-        $sql = "SELECT * FROM pizzas WHERE pizza_id = $id";
+        $sql = "SELECT * FROM usuarios WHERE usuario_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
         if (!$resultado || mysqli_errno($conn)) {
@@ -68,7 +71,7 @@ try
     }
     else 
     {
-        header('Location: index.php');
+        header('Location: usuarios.html');
         exit;
     }
 }
@@ -88,7 +91,7 @@ catch(Exception $ex)
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Pizza | Administração | Pizza DEV</title>
+    <title>Editar Usuário | Administração | Pizza DEV</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -100,39 +103,32 @@ catch(Exception $ex)
     <header class="topo flex container-padding">
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
-            <a href="index.php" class="active">Pizzas</a>
+            <a href="index.php">Pizzas</a>
             <a href="mensagens.html">Mensagens</a>
-            <a href="usuarios.html">Usuários</a>
+            <a href="usuarios.html" class="active">Usuários</a>
             <a href="login.html">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
         <div class="cabecalho flex bordered">
-            <h1>Editar Pizza</h1>
-            <a href="index.php" class="botao">
+            <h1>Editar Usuário</h1>
+            <a href="usuarios.html" class="botao">
                 Voltar
             </a>
         </div>
 
-        <?php if ($msg) : ?>
-            <div class="<?= $msg['classe'] ?>">
-                <?= $msg['mensagem']; ?>
-            </div>
-        <?php endif; ?>
+        <div class="msg-sucesso">
+            Exemplo de mensagem de sucesso!
+        </div>
+        <div class="msg-erro">
+            Exemplo de mensagem de erro!
+        </div>
 
         <form action="" method="post">
-            <div class="form-group">
-                <label for="">ID:</label>
-                <input type="text" name="id" class="input-field" readonly value="<?= $pizza['pizza_id'] ?? '' ?>">
-            </div>
-            <input type="text" name="nomePizza" id="nomePizza" value="<?= $pizza['nome'] ?>" class="input-field" placeholder="* Nome da Pizza" />
-            <textarea name="descricao" id="descricao" cols="1" rows="6" class="input-field" placeholder="* Descrição dos Ingredientes"><?= $pizza['ingredientes'] ?></textarea>
-            <div class="group-field flex">
-                <input type="number" name="precoBrotinho" id="precoBrotinho" value="<?= $pizza['brotinho'] ?>" class="input-field" step=".01" placeholder="* Preço Brotinho" />
-                <input type="number" name="precoMedia" id="precoMedia" value="<?= $pizza['media'] ?>" class="input-field" step=".01" placeholder="* Preço Média" />
-                <input type="number" name="precoGrande" id="precoGrande" value="<?= $pizza['grande'] ?>" class="input-field" step=".01" placeholder="* Preço Grande" />
-            </div>
-            <input type="text" name="foto" id="foto" value="<?= $pizza['img'] ?>" class="input-field" placeholder="Foto (ex: pizza-calabresa.jpg)" />
+            <input type="text" name="nomeCompleto" id="nomeCompleto" class="input-field" placeholder="* Nome completo" />
+            <input type="text" name="usuario" id="usuario" class="input-field" placeholder="* Usuário" />
+            <input type="password" name="senha" id="senha" class="input-field" placeholder="* Senha" />
+            <input type="password" name="confirmacaoSenha" id="confirmacaoSenha" class="input-field" placeholder="* Confirmar senha" />
             <button type="submit" class="botao">
                 Salvar
             </button>

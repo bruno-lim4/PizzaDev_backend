@@ -62,7 +62,7 @@ catch(Exception $ex)
     <header class="topo flex container-padding">
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
-            <a href="index.html" class="active">Pizzas</a>
+            <a href="index.php" class="active">Pizzas</a>
             <a href="mensagens.html">Mensagens</a>
             <a href="usuarios.html">Usuários</a>
             <a href="login.html">Sair</a>

@@ -1,3 +1,4 @@
+
 <?php
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
 // mysqli_set_charset($conn, 'utf-8');
@@ -7,33 +8,28 @@ if(mysqli_connect_errno()){
 
 $msg = array();
 
-$sql_busca = "SELECT * FROM pizzas";
+$sql_busca = "SELECT * FROM mensagens";
 
 try 
 {
-    // Verifica se tem dados via GET e existi o dado excluir
     if ($_GET && isset($_GET['excluir'])){
 
-        // Se usar apenas o $id = $_GET['excluir']; ocasiona falha de SQL Injection
         $id = filter_var($_GET['excluir'], FILTER_VALIDATE_INT);
 
         if($id === false){
             throw new Exception("ID inválido para exclusão");
         }
 
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2 OR 1 = 1";
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2; DROP TABLE clientes; se for um usuário com permissão de root";
-        $sql = "DELETE FROM pizzas WHERE pizza_id = $id";
+        $sql = "DELETE FROM mensagens WHERE mensagem_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
         if ($resultado === false || mysqli_errno($conn)) {
             throw new Exception('Erro ao realizar a exclusão no banco de dados: ' . mysqli_error($conn));
         }
 
-         // operação de exclusão na base
-         $msg = array(
+        $msg = array(
             'classe' => 'msg-sucesso',
-            'mensagem' => 'Pizza excluída com sucesso!'
+            'mensagem' => 'Mensagem excluída com sucesso!'
         );
     }
     
@@ -48,11 +44,11 @@ catch(Exception $ex)
 finally {
     $resultado = mysqli_query($conn, $sql_busca);
     if ($resultado) {
-        $lista_pizzas = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+        $lista_mensagens = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -60,7 +56,7 @@ finally {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nossas Pizzas | Administração | Pizza DEV</title>
+    <title>Mensagens | Administração | Pizza DEV</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -72,63 +68,44 @@ finally {
     <header class="topo flex container-padding">
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
-            <a href="index.php" class="active">Pizzas</a>
-            <a href="mensagens.php">Mensagens</a>
+            <a href="index.php">Pizzas</a>
+            <a href="mensagens.php" class="active">Mensagens</a>
             <a href="usuarios.php">Usuários</a>
             <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
         <div class="cabecalho flex">
-            <a href="cadastrar-pizza.php" class="botao">
-                Nova Pizza
-            </a>
+            <br />
         </div>
-
-        <?php if ($msg) : ?>
-            <div class="<?= $msg['classe'] ?>">
-                <?= $msg['mensagem']; ?>
-            </div>
-        <?php endif; ?>
-
         <div class="tabela-responsiva">
             <table>
                 <thead>
                     <tr>
-                        <th width="85">Foto</th>
-                        <th>Pizza</th>
-                        <th width="130">Brotinho</th>
-                        <th width="130">Média</th>
-                        <th width="130">Grande</th>
-                        <th width="195" colspan="2"></th>
+                        <th>Nome completo</th>
+                        <th>E-mail</th>
+                        <th>Assunto</th>
+                        <th>Mensagem</th>
+                        <th width="95"></th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($lista_pizzas as $pizza) : ?>
+                <?php foreach ($lista_mensagens as $mensagem) : ?>
                     <tr>
                         <td>
-                            <img src="<?= $pizza['foto'] ?>" alt="" />
+                            <?= $mensagem['nome_completo'] ?>
                         </td>
                         <td>
-                            <h3><?= $pizza['nome'] ?></h3>
-                            <p><?= $pizza['ingredientes'] ?></p>
+                            <?= $mensagem['email'] ?>
                         </td>
                         <td>
-                            <?= $pizza['brotinho'] ?>
+                            <?= $mensagem['assunto'] ?>
                         </td>
                         <td>
-                            <?= $pizza['media'] ?>
+                            <?= $mensagem['mensagem'] ?>
                         </td>
                         <td>
-                            <?= $pizza['grande'] ?>
-                        </td>
-                        <td>
-                            <a href="editar-pizza.php?id=<?= $pizza['pizza_id'] ?>" class="btn-editar">
-                                <i class="fa-solid fa-pen-to-square"></i> Editar
-                            </a>
-                        </td>
-                        <td>
-                            <a href="index.php?excluir=<?= $pizza['pizza_id'] ?>" class="btn-excluir">
+                            <a href="mensagens.php?excluir=<?= $mensagem['mensagem_id'] ?>" class="btn-excluir">
                                 <i class="fa-regular fa-trash-can"></i> Excluir
                             </a>
                         </td>

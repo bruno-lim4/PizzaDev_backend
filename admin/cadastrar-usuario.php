@@ -66,15 +66,15 @@ catch(Exception $ex)
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
             <a href="index.php">Pizzas</a>
-            <a href="mensagens.html">Mensagens</a>
-            <a href="usuarios.html" class="active">Usuários</a>
-            <a href="login.html">Sair</a>
+            <a href="mensagens.php">Mensagens</a>
+            <a href="usuarios.php" class="active">Usuários</a>
+            <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
         <div class="cabecalho flex bordered">
             <h1>Cadastrar Usuário</h1>
-            <a href="usuarios.html" class="botao">
+            <a href="usuarios.php" class="botao">
                 Voltar
             </a>
         </div>

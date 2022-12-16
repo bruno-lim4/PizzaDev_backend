@@ -7,7 +7,7 @@ if(mysqli_connect_errno()){
 
 $msg = array();
 
-$sql_busca = "SELECT * FROM pizzas";
+$sql_busca = "SELECT * FROM usuarios";
 
 try 
 {
@@ -23,7 +23,7 @@ try
 
         // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2 OR 1 = 1";
         // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2; DROP TABLE clientes; se for um usuário com permissão de root";
-        $sql = "DELETE FROM pizzas WHERE pizza_id = $id";
+        $sql = "DELETE FROM usuarios WHERE usuario_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
         if ($resultado === false || mysqli_errno($conn)) {
@@ -33,7 +33,7 @@ try
          // operação de exclusão na base
          $msg = array(
             'classe' => 'msg-sucesso',
-            'mensagem' => 'Pizza excluída com sucesso!'
+            'mensagem' => 'Usuário excluído com sucesso!'
         );
     }
     
@@ -48,10 +48,9 @@ catch(Exception $ex)
 finally {
     $resultado = mysqli_query($conn, $sql_busca);
     if ($resultado) {
-        $lista_pizzas = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+        $lista_usuarios = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +59,7 @@ finally {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nossas Pizzas | Administração | Pizza DEV</title>
+    <title>Usuários | Administração | Pizza DEV</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -72,16 +71,16 @@ finally {
     <header class="topo flex container-padding">
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
-            <a href="index.php" class="active">Pizzas</a>
+            <a href="index.php">Pizzas</a>
             <a href="mensagens.php">Mensagens</a>
-            <a href="usuarios.php">Usuários</a>
+            <a href="usuarios.php" class="active">Usuários</a>
             <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
         <div class="cabecalho flex">
-            <a href="cadastrar-pizza.php" class="botao">
-                Nova Pizza
+            <a href="cadastrar-usuario.php" class="botao">
+                Novo Usuário
             </a>
         </div>
 
@@ -95,40 +94,26 @@ finally {
             <table>
                 <thead>
                     <tr>
-                        <th width="85">Foto</th>
-                        <th>Pizza</th>
-                        <th width="130">Brotinho</th>
-                        <th width="130">Média</th>
-                        <th width="130">Grande</th>
-                        <th width="195" colspan="2"></th>
+                        <th width="430">Nome completo</th>
+                        <th width="320">Usuário</th>
+                        <th colspan="2"></th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($lista_pizzas as $pizza) : ?>
+                <?php foreach ($lista_usuarios as $usuario) : ?>
                     <tr>
                         <td>
-                            <img src="<?= $pizza['foto'] ?>" alt="" />
+                            <h3><?= $usuario['nome_completo']?></h3>
                         </td>
                         <td>
-                            <h3><?= $pizza['nome'] ?></h3>
-                            <p><?= $pizza['ingredientes'] ?></p>
-                        </td>
+                            <h3><?= $usuario['username']?></h3>
                         <td>
-                            <?= $pizza['brotinho'] ?>
-                        </td>
-                        <td>
-                            <?= $pizza['media'] ?>
-                        </td>
-                        <td>
-                            <?= $pizza['grande'] ?>
-                        </td>
-                        <td>
-                            <a href="editar-pizza.php?id=<?= $pizza['pizza_id'] ?>" class="btn-editar">
+                            <a href="editar-usuario.php?id=<?= $usuario['usuario_id'] ?>" class="btn-editar">
                                 <i class="fa-solid fa-pen-to-square"></i> Editar
                             </a>
                         </td>
                         <td>
-                            <a href="index.php?excluir=<?= $pizza['pizza_id'] ?>" class="btn-excluir">
+                            <a href="usuarios.php?excluir=<?= $usuario['usuario_id'] ?>" class="btn-excluir">
                                 <i class="fa-regular fa-trash-can"></i> Excluir
                             </a>
                         </td>

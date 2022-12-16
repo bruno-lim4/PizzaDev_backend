@@ -1,3 +1,48 @@
+<?php 
+$conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
+// mysqli_set_charset($conn, 'utf-8');
+if (mysqli_connect_errno()) {
+    die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
+}
+
+$msg = array();
+
+try {
+    if ($_POST) {
+        $nome = filter_var($_POST['nome'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome Completo!');
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Email!');
+        $assunto = filter_var($_POST['assunto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Assunto!');
+        $mens = filter_var($_POST['mensagem'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Mensagem!');
+        
+        $nome = mysqli_real_escape_string($conn, $nome);
+        $email = mysqli_real_escape_string($conn, $email);
+        $assunto = mysqli_real_escape_string($conn, $assunto);
+        $mens = mysqli_real_escape_string($conn, $mens);
+
+        $sql = "INSERT INTO mensagens (nome_completo, email, assunto, mensagem) VALUES('$nome', '$email', '$assunto', '$mens')";
+
+        $resultado = mysqli_query($conn, $sql);
+
+        if ($resultado === false || mysqli_errno($conn)) {
+            throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
+        }
+
+        $msg = array(
+            'classe' => 'msg-sucesso',
+            'mensagem' => 'Mensagem enviada com sucesso!'
+        );
+    }
+}
+catch(Exception $ex)
+{
+    $msg = array(
+        'classe' => 'msg-erro',
+        'mensagem' => $ex->getMessage()
+    );
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -52,6 +97,12 @@
         <div class="divider"></div>
 
         <!-- Cardápio -->
+        <?php if ($msg) : ?>
+            <div class="<?= $msg['classe'] ?>">
+                <?= $msg['mensagem']; ?>
+            </div>
+        <?php endif; ?>
+
         <section class="section" id="cardapio">
             <div class="container">
                 <h2 class="title">Cardápio</h2>

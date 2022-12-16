@@ -101,9 +101,9 @@ catch(Exception $ex)
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
             <a href="index.php" class="active">Pizzas</a>
-            <a href="mensagens.html">Mensagens</a>
-            <a href="usuarios.html">Usuários</a>
-            <a href="login.html">Sair</a>
+            <a href="mensagens.php">Mensagens</a>
+            <a href="usuarios.php">Usuários</a>
+            <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
@@ -121,10 +121,7 @@ catch(Exception $ex)
         <?php endif; ?>
 
         <form action="" method="post">
-            <div class="form-group">
-                <label for="">ID:</label>
-                <input type="text" name="id" class="input-field" readonly value="<?= $pizza['pizza_id'] ?? '' ?>">
-            </div>
+            <input type="hidden" name="id" class="input-field" readonly value="<?= $pizza['pizza_id'] ?? '' ?>">
             <input type="text" name="nomePizza" id="nomePizza" value="<?= $pizza['nome'] ?>" class="input-field" placeholder="* Nome da Pizza" />
             <textarea name="descricao" id="descricao" cols="1" rows="6" class="input-field" placeholder="* Descrição dos Ingredientes"><?= $pizza['ingredientes'] ?></textarea>
             <div class="group-field flex">

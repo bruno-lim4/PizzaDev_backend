@@ -19,21 +19,22 @@ try
         ]) ?: throw new Exception('ID informado é inválido!');
 
         $nomeCompleto = filter_var($_POST['nomeCompleto'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome Completo!');
-        $usuario = filter_var($_POST['usuario'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Usuário!');
+        $user = filter_var($_POST['usuario'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Usuário!');
         $senha = filter_var($_POST['senha'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Senha!');
-        $confirmacaoSenha= filter_var($_POST['confirmacaoSenha'], FILTER_SANITIZE_NUMBER_FLOAT) ?: throw new Exception('Por favor, preencha o campo Confirmar Senha!');
+        $confirmacaoSenha= filter_var($_POST['confirmacaoSenha'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Confirmar Senha!');
         
         $nomeCompleto = mysqli_real_escape_string($conn, $nomeCompleto);
-        $usuario = mysqli_real_escape_string($conn, $usuario);
+        $user = mysqli_real_escape_string($conn, $user);
         $senha = mysqli_real_escape_string($conn, $senha);
         $confirmacaoSenha = mysqli_real_escape_string($conn, $confirmacaoSenha);
-
-        $sql = "UPDATE usuarios SET nome_completo = '$nomeCompleto', username = '$usuario', senha = '$senha' WHERE usuario_id = $id";
-        $resultado = mysqli_query($conn, $sql);
 
         if ($senha != $confirmacaoSenha) {
             throw new Exception('As senhas não coincidem');
         }
+
+        $sql = "UPDATE usuarios SET nome_completo = '$nomeCompleto', username = '$user', senha = '$senha' WHERE usuario_id = $id";
+        $resultado = mysqli_query($conn, $sql);
+
 
         if ($resultado === false || mysqli_errno($conn)) {
             throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
@@ -41,7 +42,7 @@ try
 
         $msg = array(
             'classe' => 'msg-sucesso',
-            'mensagem' => 'Pizza atualizada com sucesso!'
+            'mensagem' => 'Usuário atualizado com sucesso!'
         );
     }
 
@@ -64,14 +65,14 @@ try
             throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
         }
 
-        $pizza = mysqli_fetch_assoc($resultado);
-        if (!$pizza) {
-            throw new Exception('Dados da pizza não foram encontrados!');
+        $usuario = mysqli_fetch_assoc($resultado);
+        if (!$usuario) {
+            throw new Exception('Dados do usuário não foram encontrados!');
         }
     }
     else 
     {
-        header('Location: usuarios.html');
+        header('Location: usuarios.php');
         exit;
     }
 }
@@ -104,29 +105,29 @@ catch(Exception $ex)
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
             <a href="index.php">Pizzas</a>
-            <a href="mensagens.html">Mensagens</a>
-            <a href="usuarios.html" class="active">Usuários</a>
-            <a href="login.html">Sair</a>
+            <a href="mensagens.php">Mensagens</a>
+            <a href="usuarios.php" class="active">Usuários</a>
+            <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">
         <div class="cabecalho flex bordered">
             <h1>Editar Usuário</h1>
-            <a href="usuarios.html" class="botao">
+            <a href="usuarios.php" class="botao">
                 Voltar
             </a>
         </div>
 
-        <div class="msg-sucesso">
-            Exemplo de mensagem de sucesso!
-        </div>
-        <div class="msg-erro">
-            Exemplo de mensagem de erro!
-        </div>
+        <?php if ($msg) : ?>
+            <div class="<?= $msg['classe'] ?>">
+                <?= $msg['mensagem']; ?>
+            </div>
+        <?php endif; ?>
 
         <form action="" method="post">
-            <input type="text" name="nomeCompleto" id="nomeCompleto" class="input-field" placeholder="* Nome completo" />
-            <input type="text" name="usuario" id="usuario" class="input-field" placeholder="* Usuário" />
+            <input type="hidden" name="id" class="input-field" readonly value="<?= $usuario['usuario_id'] ?? '' ?>">
+            <input type="teindexxt" name="nomeCompleto" value="<?= $usuario['nome_completo'] ?>" id="nomeCompleto" class="input-field" placeholder="* Nome completo" />
+            <input type="text" name="usuario" value="<?= $usuario['username'] ?>" id="usuario" class="input-field" placeholder="* Usuário" />
             <input type="password" name="senha" id="senha" class="input-field" placeholder="* Senha" />
             <input type="password" name="confirmacaoSenha" id="confirmacaoSenha" class="input-field" placeholder="* Confirmar senha" />
             <button type="submit" class="botao">

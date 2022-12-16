@@ -63,9 +63,9 @@ catch(Exception $ex)
         <img src="../assets/images/pizza-dev.png" alt="Pizza DEV" />
         <nav class="menu">
             <a href="index.php" class="active">Pizzas</a>
-            <a href="mensagens.html">Mensagens</a>
-            <a href="usuarios.html">Usuários</a>
-            <a href="login.html">Sair</a>
+            <a href="mensagens.php">Mensagens</a>
+            <a href="usuarios.php">Usuários</a>
+            <a href="login.php">Sair</a>
         </nav>
     </header>
     <div class="pagina container">

@@ -7,6 +7,8 @@ if (mysqli_connect_errno()) {
 
 $msg = array();
 
+$sql = "SELECT * FROM pizzas;";
+
 try {
     if ($_POST) {
         $nome = filter_var($_POST['nome'], FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES) ?: throw new Exception('Por favor, preencha o campo Nome Completo!');
@@ -39,6 +41,12 @@ catch(Exception $ex)
         'classe' => 'msg-erro',
         'mensagem' => $ex->getMessage()
     );
+} 
+finally {
+    $resultado = mysqli_query($conn, $sql);
+    if ($resultado) {
+        $lista_pizzas = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+    }
 }
 
 ?>
@@ -97,73 +105,27 @@ catch(Exception $ex)
         <div class="divider"></div>
 
         <!-- Cardápio -->
-        <?php if ($msg) : ?>
-            <div class="<?= $msg['classe'] ?>">
-                <?= $msg['mensagem']; ?>
-            </div>
-        <?php endif; ?>
-
         <section class="section" id="cardapio">
             <div class="container">
                 <h2 class="title">Cardápio</h2>
                 <p class="subtitle">Confira abaixo as nossas opções de pizzas:</p>
                 <div class="lista-pizzas">
+                <?php foreach ($lista_pizzas as $pizza) : ?>
                     <div class="pizza">
-                        <img src="https://via.placeholder.com/155x155" alt="Pizza de Calabresa" />
+                        <img src="<?= $pizza['img'] ?>" alt="<?= $pizza['nome'] ?>" />
                         <div>
-                            <h3 class="title">Pizza de Calabresa</h3>
-                            <p>Calabresa, Molho de Tomate com Cebola.</p>
+                            <h3 class="title"><?= $pizza['nome'] ?></h3>
+                            <p><?= $pizza['ingredientes'] ?></p>
 
                             <div class="preco">
                                 <strong class="title-preco">Preço:</strong><br>
-                                Brotinho (4 pedaços): <strong>R$ 0,00</strong><br>
-                                Média (6 pedaços): <strong>R$ 0,00</strong><br>
-                                Grande (8 pedaços): <strong>R$ 0,00</strong>
+                                Brotinho (4 pedaços): <strong>R$ <?= $pizza['brotinho'] ?></strong><br>
+                                Média (6 pedaços): <strong>R$ <?= $pizza['media'] ?></strong><br>
+                                Grande (8 pedaços): <strong>R$ <?= $pizza['grande'] ?></strong>
                             </div>
                         </div>
                     </div>
-                    <div class="pizza">
-                        <img src="https://via.placeholder.com/155x155" alt="Pizza de Calabresa" />
-                        <div>
-                            <h3 class="title">Pizza de Calabresa</h3>
-                            <p>Calabresa, Molho de Tomate com Cebola.</p>
-
-                            <div class="preco">
-                                <strong class="title-preco">Preço:</strong><br>
-                                Brotinho (4 pedaços): <strong>R$ 0,00</strong><br>
-                                Média (6 pedaços): <strong>R$ 0,00</strong><br>
-                                Grande (8 pedaços): <strong>R$ 0,00</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pizza">
-                        <img src="https://via.placeholder.com/155x155" alt="Pizza de Calabresa" />
-                        <div>
-                            <h3 class="title">Pizza de Calabresa</h3>
-                            <p>Calabresa, Molho de Tomate com Cebola.</p>
-
-                            <div class="preco">
-                                <strong class="title-preco">Preço:</strong><br>
-                                Brotinho (4 pedaços): <strong>R$ 0,00</strong><br>
-                                Média (6 pedaços): <strong>R$ 0,00</strong><br>
-                                Grande (8 pedaços): <strong>R$ 0,00</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pizza">
-                        <img src="https://via.placeholder.com/155x155" alt="Pizza de Calabresa" />
-                        <div>
-                            <h3 class="title">Pizza de Calabresa</h3>
-                            <p>Calabresa, Molho de Tomate com Cebola.</p>
-
-                            <div class="preco">
-                                <strong class="title-preco">Preço:</strong><br>
-                                Brotinho (4 pedaços): <strong>R$ 0,00</strong><br>
-                                Média (6 pedaços): <strong>R$ 0,00</strong><br>
-                                Grande (8 pedaços): <strong>R$ 0,00</strong>
-                            </div>
-                        </div>
-                    </div>
+                <?php endforeach; ?>
                 </div>
             </div>
         </section>

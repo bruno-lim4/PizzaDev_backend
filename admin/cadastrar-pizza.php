@@ -1,6 +1,5 @@
 <?php 
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
 if (mysqli_connect_errno()) {
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
@@ -16,8 +15,6 @@ try {
         $brotinho = filter_var($_POST['precoBrotinho'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) ?: throw new Exception('Por favor, preencha o campo Preço Brotinho!');
         $media = filter_var($_POST['precoMedia'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) ?: throw new Exception('Por favor, preencha o campo Preço Média!');
         $grande = filter_var($_POST['precoGrande'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) ?: throw new Exception('Por favor, preencha o campo Preço Grande!');
-        
-        var_dump($brotinho);
 
         $nome = mysqli_real_escape_string($conn, $nome);
         $des = mysqli_real_escape_string($conn, $des);

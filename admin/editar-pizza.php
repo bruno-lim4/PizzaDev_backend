@@ -1,7 +1,6 @@
 <?php
 
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
 if (mysqli_connect_errno()) {
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
@@ -53,18 +52,6 @@ try
         if ($id === false) {
             throw new Exception('ID fornecido é inválido!');
         }
-
-        $sql = "SELECT * FROM pizzas WHERE pizza_id = $id";
-        $resultado = mysqli_query($conn, $sql);
-
-        if (!$resultado || mysqli_errno($conn)) {
-            throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
-        }
-
-        $pizza = mysqli_fetch_assoc($resultado);
-        if (!$pizza) {
-            throw new Exception('Dados da pizza não foram encontrados!');
-        }
     }
     else 
     {
@@ -78,6 +65,18 @@ catch(Exception $ex)
         'classe' => 'msg-erro',
         'mensagem' => $ex->getMessage()
     );
+} finally {
+    $sql = "SELECT * FROM pizzas WHERE pizza_id = $id";
+    $resultado = mysqli_query($conn, $sql);
+
+    if (!$resultado || mysqli_errno($conn)) {
+        throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
+    }
+
+    $pizza = mysqli_fetch_assoc($resultado);
+    if (!$pizza) {
+        throw new Exception('Dados da pizza não foram encontrados!');
+    }
 }
 
 ?>

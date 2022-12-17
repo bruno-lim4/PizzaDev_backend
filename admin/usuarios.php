@@ -1,6 +1,5 @@
 <?php
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
 if(mysqli_connect_errno()){
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
@@ -11,26 +10,21 @@ $sql_busca = "SELECT * FROM usuarios";
 
 try 
 {
-    // Verifica se tem dados via GET e existi o dado excluir
     if ($_GET && isset($_GET['excluir'])){
 
-        // Se usar apenas o $id = $_GET['excluir']; ocasiona falha de SQL Injection
         $id = filter_var($_GET['excluir'], FILTER_VALIDATE_INT);
 
         if($id === false){
             throw new Exception("ID inválido para exclusão");
         }
 
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2 OR 1 = 1";
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2; DROP TABLE clientes; se for um usuário com permissão de root";
         $sql = "DELETE FROM usuarios WHERE usuario_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
         if ($resultado === false || mysqli_errno($conn)) {
             throw new Exception('Erro ao realizar a exclusão no banco de dados: ' . mysqli_error($conn));
         }
-
-         // operação de exclusão na base
+        
          $msg = array(
             'classe' => 'msg-sucesso',
             'mensagem' => 'Usuário excluído com sucesso!'

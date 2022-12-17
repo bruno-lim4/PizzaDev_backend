@@ -1,6 +1,6 @@
-<?php
+<?php   
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
+
 if(mysqli_connect_errno()){
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
@@ -11,18 +11,14 @@ $sql_busca = "SELECT * FROM pizzas";
 
 try 
 {
-    // Verifica se tem dados via GET e existi o dado excluir
     if ($_GET && isset($_GET['excluir'])){
 
-        // Se usar apenas o $id = $_GET['excluir']; ocasiona falha de SQL Injection
         $id = filter_var($_GET['excluir'], FILTER_VALIDATE_INT);
 
         if($id === false){
             throw new Exception("ID inválido para exclusão");
         }
 
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2 OR 1 = 1";
-        // Exemplo de SQL Injection - $sql = "DELETE FROM clientes WHERE cliente_id = 2; DROP TABLE clientes; se for um usuário com permissão de root";
         $sql = "DELETE FROM pizzas WHERE pizza_id = $id";
         $resultado = mysqli_query($conn, $sql);
 
@@ -107,7 +103,7 @@ finally {
                 <?php foreach ($lista_pizzas as $pizza) : ?>
                     <tr>
                         <td>
-                            <img src="<?= $pizza['foto'] ?>" alt="" />
+                            <img src="../assets/images/<?= $pizza['img'] ?>" alt="" />
                         </td>
                         <td>
                             <h3><?= $pizza['nome'] ?></h3>

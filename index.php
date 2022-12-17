@@ -1,11 +1,9 @@
 <?php 
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
+
 if (mysqli_connect_errno()) {
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
-
-$msg = array();
 
 $sql = "SELECT * FROM pizzas;";
 
@@ -21,18 +19,13 @@ try {
         $assunto = mysqli_real_escape_string($conn, $assunto);
         $mens = mysqli_real_escape_string($conn, $mens);
 
-        $sql = "INSERT INTO mensagens (nome_completo, email, assunto, mensagem) VALUES('$nome', '$email', '$assunto', '$mens')";
+        $sql2 = "INSERT INTO mensagens (nome_completo, email, assunto, mensagem) VALUES('$nome', '$email', '$assunto', '$mens')";
 
-        $resultado = mysqli_query($conn, $sql);
+        $resultado = mysqli_query($conn, $sql2);
 
         if ($resultado === false || mysqli_errno($conn)) {
             throw new Exception('Erro ao realizar operação no banco de dados: ' . mysqli_error($conn));
         }
-
-        $msg = array(
-            'classe' => 'msg-sucesso',
-            'mensagem' => 'Mensagem enviada com sucesso!'
-        );
     }
 }
 catch(Exception $ex)
@@ -112,7 +105,7 @@ finally {
                 <div class="lista-pizzas">
                 <?php foreach ($lista_pizzas as $pizza) : ?>
                     <div class="pizza">
-                        <img src="<?= $pizza['img'] ?>" alt="<?= $pizza['nome'] ?>" />
+                        <img src="assets/images/<?= $pizza['img'] ?>" alt="<?= $pizza['nome'] ?>" />
                         <div>
                             <h3 class="title"><?= $pizza['nome'] ?></h3>
                             <p><?= $pizza['ingredientes'] ?></p>

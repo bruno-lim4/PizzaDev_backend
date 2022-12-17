@@ -1,7 +1,6 @@
 <?php
 
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
 if (mysqli_connect_errno()) {
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }
@@ -57,18 +56,6 @@ try
         if ($id === false) {
             throw new Exception('ID fornecido é inválido!');
         }
-
-        $sql = "SELECT * FROM usuarios WHERE usuario_id = $id";
-        $resultado = mysqli_query($conn, $sql);
-
-        if (!$resultado || mysqli_errno($conn)) {
-            throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
-        }
-
-        $usuario = mysqli_fetch_assoc($resultado);
-        if (!$usuario) {
-            throw new Exception('Dados do usuário não foram encontrados!');
-        }
     }
     else 
     {
@@ -82,6 +69,18 @@ catch(Exception $ex)
         'classe' => 'msg-erro',
         'mensagem' => $ex->getMessage()
     );
+} finally {
+    $sql = "SELECT * FROM usuarios WHERE usuario_id = $id";
+    $resultado = mysqli_query($conn, $sql);
+
+    if (!$resultado || mysqli_errno($conn)) {
+        throw new Exception('Erro ao buscar informações na base de dados: ' . mysqli_error($conn));
+    }
+
+    $usuario = mysqli_fetch_assoc($resultado);
+    if (!$usuario) {
+        throw new Exception('Dados do usuário não foram encontrados!');
+    }
 }
 
 ?>
@@ -125,7 +124,7 @@ catch(Exception $ex)
         <?php endif; ?>
 
         <form action="" method="post">
-            <input type="hidden" name="id" class="input-field" readonly value="<?= $usuario['usuario_id'] ?? '' ?>">
+            <input type="hidden" name="id" class="input-field" readonly value="<?= $usuario['usuario_id'] ?? ''?>">
             <input type="teindexxt" name="nomeCompleto" value="<?= $usuario['nome_completo'] ?>" id="nomeCompleto" class="input-field" placeholder="* Nome completo" />
             <input type="text" name="usuario" value="<?= $usuario['username'] ?>" id="usuario" class="input-field" placeholder="* Usuário" />
             <input type="password" name="senha" id="senha" class="input-field" placeholder="* Senha" />

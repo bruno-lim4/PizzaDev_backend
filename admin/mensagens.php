@@ -1,7 +1,7 @@
 
 <?php
 $conn = mysqli_connect('localhost', 'root', 'password', 'pizza_dev');
-// mysqli_set_charset($conn, 'utf-8');
+
 if(mysqli_connect_errno()){
     die('Não foi possível se conectar com o banco de dados: ' . mysqli_connect_error());
 }

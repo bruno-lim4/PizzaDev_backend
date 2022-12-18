@@ -26,7 +26,7 @@ try
             throw new Exception('Erro ao realizar a exclusão no banco de dados: ' . mysqli_error($conn));
         }
 
-         // operação de exclusão na base
+
          $msg = array(
             'classe' => 'msg-sucesso',
             'mensagem' => 'Pizza excluída com sucesso!'
